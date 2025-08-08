@@ -1,4 +1,4 @@
-# 🎮 Haptic Composer
+# 🎮 CVS - Haptic Composer
 
 A professional vibration sequencer that transforms musical patterns into tactile experiences through game controllers.
 
