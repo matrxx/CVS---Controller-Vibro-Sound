@@ -25,7 +25,7 @@ A professional vibration sequencer that transforms musical patterns into tactile
 ```bash
 # Clone the repository
 git clone [https://github.com/your-username/haptic-composer.git](https://github.com/matrxx/CVS---Controller-Vibro-Sound.git)
-cd haptic-composer
+cd CVS---Controller-Vibro-Sound
 
 # Start local server (choose one)
 python -m http.server 8080
