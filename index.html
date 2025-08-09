@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVS Composer - Professional Vibration Sequencer</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="src/css/sequencer.css">
+    <link rel="stylesheet" href="src/css/controls.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Bar -->
+        <header class="header-bar">
+            <div class="header-left">
+                <div class="app-logo">
+                    <div class="logo-icon"></div>
+                    <div class="app-title">
+                        <h1>CVS - Haptic Composer</h1>
+                        <span class="version">v1.0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <div class="connection-status" id="gamepadStatus">
+                    <div class="status-indicator"></div>
+                    <span>Controller Detection</span>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <button class="header-btn" id="settingsBtn" title="Settings">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                    </svg>
+                </button>
+                <button class="header-btn" id="helpBtn" title="Help">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Transport Section -->
+            <section class="transport-section">
+                <div class="transport-left">
+                    <div class="transport-controls">
+                        <button class="transport-btn play" id="playBtn" disabled title="Play (Space)">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+                            </svg>
+                        </button>
+                        <button class="transport-btn stop" id="stopBtn" disabled title="Stop (Esc)">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5z"/>
+                            </svg>
+                        </button>
+                        <button class="transport-btn record" title="Record">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                <circle cx="8" cy="8" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="tempo-section">
+                        <label class="control-label">Tempo</label>
+                        <div class="tempo-control">
+                            <input type="range" id="bpmSlider" min="60" max="200" value="120" class="tempo-slider">
+                            <div class="tempo-display" id="bpmDisplay">120</div>
+                            <span class="tempo-unit">BPM</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="transport-center">
+                    <div class="position-display">
+                        <span class="position-label">Position</span>
+                        <div class="position-value">01.01.001</div>
+                    </div>
+                    
+                    <div class="loop-section">
+                        <button class="loop-btn" title="Loop">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+                                <path d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+                            </svg>
+                        </button>
+                        <span class="loop-count">0</span>
+                    </div>
+                </div>
+                
+                <div class="transport-right">
+                    <div class="pattern-actions">
+                        <button class="action-btn" id="clearBtn" title="Clear Pattern">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                            </svg>
+                            Clear
+                        </button>
+                        <button class="action-btn" id="savePatternBtn" title="Save Pattern">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zM4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM10 8c-.552 0-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5S10.552 8 10 8z"/>
+                            </svg>
+                            Save
+                        </button>
+                        <button class="action-btn" id="loadPatternBtn" title="Load Pattern">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6 2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H8z"/>
+                                <path d="M4 8a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8zm1 0v5h6V8H5z"/>
+                            </svg>
+                            Load
+                        </button>
+                        <input type="file" id="patternFileInput" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Workspace -->
+            <div class="workspace">
+                <!-- Left Sidebar -->
+                <aside class="left-sidebar">
+                    <div class="sidebar-section">
+                        <h3 class="section-title">Haptic Control</h3>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Weak Motor</label>
+                            <div class="slider-container">
+                                <input type="range" id="weakIntensity" min="0" max="1" step="0.01" value="0.5" class="control-slider">
+                                <span class="value-display" id="weakValue">50%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Strong Motor</label>
+                            <div class="slider-container">
+                                <input type="range" id="strongIntensity" min="0" max="1" step="0.01" value="0.8" class="control-slider">
+                                <span class="value-display" id="strongValue">80%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="test-controls">
+                            <button class="test-btn" id="testWeakBtn">Test Weak</button>
+                            <button class="test-btn" id="testStrongBtn">Test Strong</button>
+                            <button class="test-btn primary" id="testBothBtn">Test Both</button>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3 class="section-title">Pattern Library</h3>
+                        <div class="pattern-presets" id="presetButtons">
+                            <!-- Généré par JavaScript -->
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Center Content - Sequencer -->
+                <section class="sequencer-container">
+                    <div class="sequencer-header">
+                        <h2 class="sequencer-title">Pattern Sequencer</h2>
+                        <div class="sequencer-controls">
+                            <label class="control-label">Steps</label>
+                            <select id="stepsSelect" class="steps-select">
+                                <option value="8">8</option>
+                                <option value="16" selected>16</option>
+                                <option value="32">32</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="stepIndicator"></div>
+                    </div>
+                    
+                    <div class="sequencer-grid" id="noteGrid">
+                        <!-- Généré par JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Right Sidebar -->
+                <aside class="right-sidebar">
+                    <div class="sidebar-section">
+                        <h3 class="section-title">Pattern Info</h3>
+                        <div class="info-display">
+                            <div class="info-item">
+                                <span class="info-label">Density</span>
+                                <span class="info-value" id="patternInfo">0%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Status</span>
+                                <span class="info-value" id="playbackInfo">Stopped</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Loop Count</span>
+                                <span class="info-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3 class="section-title">Quick Actions</h3>
+                        <div class="quick-actions">
+                            <button class="quick-btn">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                                New Pattern
+                            </button>
+                            <button class="quick-btn">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                                </svg>
+                                Duplicate
+                            </button>
+                            <button class="quick-btn">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M12.017 1.995a5.458 5.458 0 0 0-3.043.148 3.39 3.39 0 0 0-1.976 1.976 5.458 5.458 0 0 0 .148 3.043l-4.109 4.109a.5.5 0 0 0-.707.707l4.109-4.109a5.458 5.458 0 0 0 3.043.148 3.39 3.39 0 0 0 1.976-1.976 5.458 5.458 0 0 0-.148-3.043l-2.15 2.15a.5.5 0 0 1-.707-.707l2.15-2.15z"/>
+                                </svg>
+                                Randomize
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="src/js/GamepadManager.js"></script>
+    <script src="src/js/VibrationEngine.js"></script>
+    <script src="src/js/Sequencer.js"></script>
+    <script src="src/js/PatternManager.js"></script>
+    <script src="src/js/UIController.js"></script>
+    <script src="src/js/main.js"></script>
+</body>
+</html>
