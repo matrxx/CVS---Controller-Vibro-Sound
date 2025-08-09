@@ -1,0 +1,396 @@
+/* Sequencer Professional Styles */
+
+/* Container principal du séquenceur */
+.sequencer-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    min-height: 600px;
+}
+
+/* Header du séquenceur */
+.sequencer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.sequencer-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.sequencer-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.steps-select {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.steps-select:hover,
+.steps-select:focus {
+    border-color: var(--accent-primary);
+    background: rgba(0, 212, 255, 0.05);
+}
+
+/* Barre de progression */
+.progress-bar {
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    width: 0%;
+    transition: width 0.1s linear;
+    border-radius: 2px;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2px;
+    height: 100%;
+    background: white;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}
+
+/* Grille du séquenceur */
+#noteGrid {
+    display: grid;
+    grid-template-columns: 120px repeat(var(--grid-steps, 16), 1fr);
+    gap: 2px;
+    flex: 1;
+    align-content: start;
+    overflow-x: auto;
+    padding: var(--spacing-sm);
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-secondary);
+}
+
+/* Headers de pas */
+.step-number {
+    grid-row: 1;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    background: var(--bg-glass);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-secondary);
+}
+
+.step-number.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
+/* Labels des instruments */
+.instrument-label {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--spacing-md);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.instrument-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--instrument-color, var(--accent-primary));
+    border-radius: 0 2px 2px 0;
+}
+
+/* Couleurs spécifiques par instrument */
+.instrument-label[data-instrument="Kick"]::before { background: #ff4757; }
+.instrument-label[data-instrument="Snare"]::before { background: #ff6b35; }
+.instrument-label[data-instrument="Hi-Hat"]::before { background: #ffb800; }
+.instrument-label[data-instrument="Ride"]::before { background: #00ff88; }
+.instrument-label[data-instrument="Bass"]::before { background: #00d4ff; }
+.instrument-label[data-instrument="Lead"]::before { background: #a55eea; }
+.instrument-label[data-instrument="Pad"]::before { background: #26de81; }
+.instrument-label[data-instrument="FX"]::before { background: #fd79a8; }
+
+/* Cases de notes */
+.step-cell {
+    height: 48px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.step-cell::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: var(--text-tertiary);
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.15s ease;
+}
+
+/* États hover */
+.step-cell:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: var(--accent-primary);
+    transform: scale(1.02);
+}
+
+.step-cell:hover::before {
+    opacity: 0.5;
+    width: 12px;
+    height: 12px;
+}
+
+/* État actif */
+.step-cell.active {
+    background: var(--instrument-color, var(--accent-primary));
+    border-color: var(--instrument-color, var(--accent-primary));
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+}
+
+.step-cell.active::before {
+    opacity: 1;
+    width: 16px;
+    height: 16px;
+    background: white;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+/* État en cours de lecture */
+.step-cell.playing {
+    animation: step-playing 0.3s ease-out;
+    box-shadow: 0 0 16px rgba(0, 255, 136, 0.6);
+    border-color: var(--accent-success);
+}
+
+.step-cell.playing::before {
+    background: var(--accent-success);
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.8);
+}
+
+@keyframes step-playing {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Couleurs par instrument pour les cellules actives */
+.step-cell[data-instrument="Kick"].active {
+    background: #ff4757;
+    border-color: #ff4757;
+    box-shadow: 0 0 12px rgba(255, 71, 87, 0.4);
+}
+
+.step-cell[data-instrument="Snare"].active {
+    background: #ff6b35;
+    border-color: #ff6b35;
+    box-shadow: 0 0 12px rgba(255, 107, 53, 0.4);
+}
+
+.step-cell[data-instrument="Hi-Hat"].active {
+    background: #ffb800;
+    border-color: #ffb800;
+    box-shadow: 0 0 12px rgba(255, 184, 0, 0.4);
+}
+
+.step-cell[data-instrument="Ride"].active {
+    background: #00ff88;
+    border-color: #00ff88;
+    box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+}
+
+.step-cell[data-instrument="Bass"].active {
+    background: #00d4ff;
+    border-color: #00d4ff;
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+}
+
+.step-cell[data-instrument="Lead"].active {
+    background: #a55eea;
+    border-color: #a55eea;
+    box-shadow: 0 0 12px rgba(165, 94, 234, 0.4);
+}
+
+.step-cell[data-instrument="Pad"].active {
+    background: #26de81;
+    border-color: #26de81;
+    box-shadow: 0 0 12px rgba(38, 222, 129, 0.4);
+}
+
+.step-cell[data-instrument="FX"].active {
+    background: #fd79a8;
+    border-color: #fd79a8;
+    box-shadow: 0 0 12px rgba(253, 121, 168, 0.4);
+}
+
+/* Indicateurs de vélocité (pour usage futur) */
+.step-cell .velocity-indicator {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+    height: 2px;
+    background: var(--accent-primary);
+    border-radius: 1px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.step-cell.active .velocity-indicator {
+    opacity: 1;
+}
+
+/* Groupes de mesures */
+.step-cell:nth-child(4n+1) {
+    border-left: 2px solid var(--border-primary);
+}
+
+.step-number:nth-child(4n+1) {
+    border-left: 2px solid var(--border-primary);
+}
+
+/* Mode compact pour petits écrans */
+@media (max-width: 1200px) {
+    #noteGrid {
+        grid-template-columns: 100px repeat(var(--grid-steps, 16), 1fr);
+    }
+    
+    .instrument-label {
+        padding: 0 var(--spacing-sm);
+        font-size: 11px;
+    }
+    
+    .step-cell {
+        height: 42px;
+    }
+    
+    .step-number {
+        height: 28px;
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 768px) {
+    #noteGrid {
+        grid-template-columns: 80px repeat(var(--grid-steps, 16), 1fr);
+        gap: 1px;
+    }
+    
+    .step-cell {
+        height: 36px;
+    }
+    
+    .step-number {
+        height: 24px;
+        font-size: 8px;
+    }
+    
+    .instrument-label {
+        font-size: 10px;
+        padding: 0 var(--spacing-xs);
+    }
+}
+
+/* Animations et transitions fluides */
+.step-cell {
+    will-change: transform, background-color, border-color;
+}
+
+/* États focus pour accessibilité */
+.step-cell:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* Effet de ripple au clic */
+.step-cell {
+    position: relative;
+    overflow: hidden;
+}
+
+.step-cell::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.step-cell:active::after {
+    width: 100px;
+    height: 100px;
+}
+
+/* Mode haute performance */
+@media (prefers-reduced-motion: reduce) {
+    .step-cell,
+    .progress-fill,
+    .step-number {
+        transition: none;
+        animation: none;
+    }
+}
