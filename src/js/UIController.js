@@ -25,6 +25,7 @@ class UIController {
             this.createPatternGrid();
             this.loadPresetButtons();
             this.updateUI();
+            this.setupGamepadEvents();
             
             console.log('✅ Interface utilisateur initialisée avec succès');
         } catch (error) {
@@ -78,18 +79,73 @@ class UIController {
     }
     
     /**
+     * Configurer les événements du gamepad
+     */
+    setupGamepadEvents() {
+        // Événements de connexion/déconnexion
+        this.gamepadManager.on('onConnect', (gamepad) => {
+            console.log('🎮 Manette connectée dans UIController');
+            this.updateGamepadStatus(true, gamepad);
+            this.enableControls(true);
+        });
+        
+        this.gamepadManager.on('onDisconnect', () => {
+            console.log('🎮 Manette déconnectée dans UIController');
+            this.updateGamepadStatus(false);
+            this.enableControls(false);
+            this.sequencer.stop();
+        });
+        
+        // Vérification initiale de l'état de la manette
+        if (this.gamepadManager.isGamepadConnected()) {
+            const gamepad = this.gamepadManager.getCurrentGamepad();
+            this.updateGamepadStatus(true, gamepad);
+            this.enableControls(true);
+        } else {
+            this.enableControls(false);
+        }
+    }
+    
+    /**
      * Configurer les event listeners
      */
     setupEventListeners() {
         // Transport
         if (this.elements.playBtn) {
             this.elements.playBtn.addEventListener('click', () => {
-                this.sequencer.play();
+                console.log('🎵 Tentative de lecture...');
+                
+                // Vérifier si la manette est connectée
+                if (!this.gamepadManager.isGamepadConnected()) {
+                    this.showNotification('Veuillez connecter une manette de jeu', 'warning');
+                    return;
+                }
+                
+                // Vérifier si un pattern existe
+                const pattern = this.patternManager.getCurrentPattern();
+                const hasActiveSteps = Object.values(pattern).some(steps => 
+                    steps.some(step => step === true)
+                );
+                
+                if (!hasActiveSteps) {
+                    this.showNotification('Créez d\'abord un pattern ou chargez un preset', 'info');
+                    return;
+                }
+                
+                // Démarrer la lecture
+                const success = this.sequencer.play();
+                if (success) {
+                    console.log('✅ Lecture démarrée');
+                } else {
+                    console.warn('⚠️ Impossible de démarrer la lecture');
+                    this.showNotification('Impossible de démarrer la lecture', 'error');
+                }
             });
         }
         
         if (this.elements.stopBtn) {
             this.elements.stopBtn.addEventListener('click', () => {
+                console.log('⏹️ Arrêt de la lecture...');
                 this.sequencer.stop();
             });
         }
@@ -98,6 +154,8 @@ class UIController {
             this.elements.clearBtn.addEventListener('click', () => {
                 this.patternManager.clearPattern();
                 this.updatePatternDisplay();
+                this.sequencer.setPattern(this.patternManager.getCurrentPattern());
+                this.showNotification('Pattern effacé', 'info');
             });
         }
         
@@ -136,18 +194,30 @@ class UIController {
         // Tests de vibration
         if (this.elements.testWeakBtn) {
             this.elements.testWeakBtn.addEventListener('click', () => {
+                if (!this.gamepadManager.isGamepadConnected()) {
+                    this.showNotification('Manette non connectée', 'warning');
+                    return;
+                }
                 this.vibrationEngine.testVibration('weak');
             });
         }
         
         if (this.elements.testStrongBtn) {
             this.elements.testStrongBtn.addEventListener('click', () => {
+                if (!this.gamepadManager.isGamepadConnected()) {
+                    this.showNotification('Manette non connectée', 'warning');
+                    return;
+                }
                 this.vibrationEngine.testVibration('strong');
             });
         }
         
         if (this.elements.testBothBtn) {
             this.elements.testBothBtn.addEventListener('click', () => {
+                if (!this.gamepadManager.isGamepadConnected()) {
+                    this.showNotification('Manette non connectée', 'warning');
+                    return;
+                }
                 this.vibrationEngine.testVibration('both');
             });
         }
@@ -179,6 +249,102 @@ class UIController {
                 const steps = parseInt(e.target.value);
                 this.changeSteps(steps);
             });
+        }
+        
+        // Événements du séquenceur
+        this.sequencer.on('onPlay', () => {
+            this.updatePlaybackUI(true);
+        });
+        
+        this.sequencer.on('onStop', () => {
+            this.updatePlaybackUI(false);
+        });
+        
+        this.sequencer.on('onStep', (step, activeInstruments) => {
+            this.updateStepIndicator(step);
+        });
+    }
+    
+    /**
+     * Activer/désactiver les contrôles
+     */
+    enableControls(enabled) {
+        console.log(`${enabled ? '✅ Activation' : '❌ Désactivation'} des contrôles`);
+        
+        // Contrôles principaux
+        if (this.elements.playBtn) {
+            this.elements.playBtn.disabled = !enabled;
+        }
+        
+        // Les boutons de test ne sont actifs que si une manette est connectée
+        const testButtons = [
+            this.elements.testWeakBtn,
+            this.elements.testStrongBtn,
+            this.elements.testBothBtn
+        ];
+        
+        testButtons.forEach(btn => {
+            if (btn) {
+                btn.disabled = !enabled;
+            }
+        });
+        
+        // Mettre à jour l'apparence
+        if (enabled) {
+            document.body.classList.remove('no-gamepad');
+        } else {
+            document.body.classList.add('no-gamepad');
+        }
+    }
+    
+    /**
+     * Mettre à jour le statut de la manette
+     */
+    updateGamepadStatus(connected, gamepad = null) {
+        const statusElement = this.elements.gamepadStatus;
+        if (!statusElement) return;
+        
+        if (connected && gamepad) {
+            statusElement.textContent = `🎮 ${gamepad.id}`;
+            statusElement.className = 'connection-status connected';
+        } else {
+            statusElement.textContent = 'Connectez une manette...';
+            statusElement.className = 'connection-status disconnected';
+        }
+    }
+    
+    /**
+     * Mettre à jour l'interface de lecture
+     */
+    updatePlaybackUI(isPlaying) {
+        const playBtn = this.elements.playBtn;
+        const stopBtn = this.elements.stopBtn;
+        const playbackInfo = this.elements.playbackInfo;
+        
+        if (isPlaying) {
+            if (playBtn) {
+                playBtn.disabled = true;
+                playBtn.classList.add('playing');
+            }
+            if (stopBtn) {
+                stopBtn.disabled = false;
+            }
+            if (playbackInfo) {
+                playbackInfo.textContent = 'En lecture';
+                playbackInfo.className = 'info-value playing';
+            }
+        } else {
+            if (playBtn) {
+                playBtn.disabled = !this.gamepadManager.isGamepadConnected();
+                playBtn.classList.remove('playing');
+            }
+            if (stopBtn) {
+                stopBtn.disabled = true;
+            }
+            if (playbackInfo) {
+                playbackInfo.textContent = 'Arrêté';
+                playbackInfo.className = 'info-value stopped';
+            }
         }
     }
     
@@ -256,7 +422,9 @@ class UIController {
         this.sequencer.setPattern(this.patternManager.getCurrentPattern());
         
         // Prévisualiser le son
-        this.vibrationEngine.playNote(instrument, { intensityMultiplier: 0.7 });
+        if (this.gamepadManager.isGamepadConnected()) {
+            this.vibrationEngine.playNote(instrument, { intensityMultiplier: 0.7 });
+        }
     }
     
     /**
@@ -347,6 +515,7 @@ class UIController {
         this.updatePatternDisplay();
         this.sequencer.setPattern(this.patternManager.getCurrentPattern());
         
+        this.showNotification(`Preset "${presetName}" chargé`, 'success');
         console.log(`Preset chargé: ${presetName}`);
     }
     
@@ -378,6 +547,7 @@ class UIController {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
+        this.showNotification('Pattern sauvegardé', 'success');
         console.log('Pattern sauvegardé');
     }
     
@@ -394,13 +564,14 @@ class UIController {
             if (this.patternManager.importPattern(data)) {
                 this.updatePatternDisplay();
                 this.sequencer.setPattern(this.patternManager.getCurrentPattern());
+                this.showNotification('Pattern chargé avec succès', 'success');
                 console.log('Pattern chargé depuis le fichier');
             } else {
                 throw new Error('Format de fichier invalide');
             }
         } catch (error) {
             console.error('Erreur lors du chargement:', error);
-            alert('Erreur lors du chargement du fichier: ' + error.message);
+            this.showNotification('Erreur lors du chargement: ' + error.message, 'error');
         }
     }
     
@@ -445,6 +616,9 @@ class UIController {
         if (this.elements.strongValue) {
             this.elements.strongValue.textContent = `${Math.round(intensity.strong * 100)}%`;
         }
+        
+        // Vérifier l'état initial des contrôles
+        this.enableControls(this.gamepadManager.isGamepadConnected());
     }
     
     /**
@@ -454,42 +628,46 @@ class UIController {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.textContent = message;
+        
+        const colors = {
+            success: '#00ff88',
+            error: '#ff4757',
+            warning: '#ffb800',
+            info: '#00d4ff'
+        };
+        
         notification.style.cssText = `
             position: fixed;
-            top: 20px;
+            top: 80px;
             right: 20px;
-            padding: 15px;
+            padding: 12px 16px;
             border-radius: 8px;
             color: white;
+            font-weight: 500;
+            font-size: 13px;
             z-index: 1000;
-            background: ${type === 'error' ? 'var(--accent-danger)' : 'var(--accent-success)'};
+            background: ${colors[type] || colors.info};
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
         `;
         
         document.body.appendChild(notification);
         
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 3000);
-    }
-    
-    /**
-     * Activer/désactiver les contrôles
-     */
-    setControlsEnabled(enabled) {
-        const controls = [
-            this.elements.playBtn,
-            this.elements.testWeakBtn,
-            this.elements.testStrongBtn,
-            this.elements.testBothBtn
-        ];
-        
-        controls.forEach(control => {
-            if (control) {
-                control.disabled = !enabled;
-            }
+        // Animation d'entrée
+        requestAnimationFrame(() => {
+            notification.style.transform = 'translateX(0)';
         });
+        
+        // Supprimer après 3 secondes
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
     }
     
     /**
